@@ -1,38 +1,28 @@
 import React from 'react';
 import TodoItem from '../TodoItem';
+import { compose } from 'ramda';
 import { storiesOf, action } from '@kadira/storybook';
 
-storiesOf('TodoItem', module)
-  .add('not completed', () => {
-    const todo = {
-      id: 'the-id',
-      text: 'Hello Todo',
-      completed: false
-    };
-
-    return getItem(todo);
-  })
-  .add('completed', () => {
-    const todo = {
-      id: 'the-id',
-      text: 'Hello Todo',
-      completed: true
-    };
-
-    return getItem(todo);
-  });
-
-
-function getItem(todo) {
-  return (
-    <div className="todoapp">
-      <div className="todo-list">
-        <TodoItem
-          todo={todo}
-          editTodo={action('editTodo')}
-          deleteTodo={action('deleteTodo')}
-          completeTodo={action('completeTodo')}/>
-      </div>
+const getItem = todo => () => (
+  <div className='todoapp'>
+    <div className='todo-list'>
+      <TodoItem
+        todo={todo}
+        editTodo={action('editTodo')}
+        deleteTodo={action('deleteTodo')}
+        completeTodo={action('completeTodo')}/>
     </div>
-  );
-}
+  </div>
+);
+
+const getTodo = completed => ({
+  id: 'the-id',
+  text: 'Hello Todo',
+  completed,
+});
+
+const createItemWhereCompletedIs = compose(getItem, getTodo);
+
+storiesOf('TodoItem', module)
+  .add('not completed', createItemWhereCompletedIs(false))
+  .add('completed', createItemWhereCompletedIs(true));
